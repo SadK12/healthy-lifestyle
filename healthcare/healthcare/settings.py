@@ -10,6 +10,8 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
+import json
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -73,15 +75,32 @@ WSGI_APPLICATION = 'healthcare.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
 
+DB_CONFIG = {}
+try:
+    with open(os.path.expanduser('~/.config/django_prac.json'), 'r') as config:
+        DB_CONFIG = json.load(config)
+except FileNotFoundError:
+    pass
+    
+ALLOWED_HOSTS = DB_CONFIG.get('projects', {}).get('healthcare', {}).get('hosts', [])
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'alex',
-        'USER': 'alex',
-        'PASSWORD': '',
+        'NAME': DB_CONFIG.get('projects', {}).get('healthcare', {}).get('db_name', 'care_db'),
+        'USER': DB_CONFIG.get('db_user', 'healthcare'),
+        'PASSWORD': DB_CONFIG.get('db_password', ''),
         'HOST': '127.0.0.1',
         'PORT': '5432',
-    }
+    }    
+#    'default': {
+#        'ENGINE': 'django.db.backends.postgresql',
+#        'NAME': 'care_db',
+#        'USER': 'healthcare',
+#        'PASSWORD': '',
+#        'HOST': '127.0.0.1',
+#        'PORT': '5432',
+#    }
 }
 
 
