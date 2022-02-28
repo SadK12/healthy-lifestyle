@@ -81,7 +81,7 @@ try:
         DB_CONFIG = json.load(config)
 except FileNotFoundError:
     pass
-    
+
 ALLOWED_HOSTS = DB_CONFIG.get('projects', {}).get('healthcare', {}).get('hosts', [])
 
 DATABASES = {
@@ -92,15 +92,7 @@ DATABASES = {
         'PASSWORD': DB_CONFIG.get('db_password', ''),
         'HOST': '127.0.0.1',
         'PORT': '5432',
-    }    
-#    'default': {
-#        'ENGINE': 'django.db.backends.postgresql',
-#        'NAME': 'care_db',
-#        'USER': 'healthcare',
-#        'PASSWORD': '',
-#        'HOST': '127.0.0.1',
-#        'PORT': '5432',
-#    }
+    }
 }
 
 
