@@ -27,9 +27,6 @@ SECRET_KEY = 'django-insecure-$7b-^&3b5au&qea=j2kipo_z#%l6$v%b6_&cadp+i!v40gfi^l
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'hls.apps.HlsConfig'
 ]
 
 MIDDLEWARE = [
@@ -56,7 +54,9 @@ ROOT_URLCONF = 'healthcare.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates'
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
