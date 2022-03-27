@@ -11,3 +11,4 @@ class User(models.Model):
     goal = models.CharField(max_length=20)
     activity = models.CharField(max_length=20)
     wrist = models.PositiveSmallIntegerField()
+    
