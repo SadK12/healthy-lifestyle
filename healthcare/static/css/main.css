@@ -1,0 +1,77 @@
+body {
+  background-image: url(../img/main.jpeg);
+  background-size: cover;
+  font-family: 'Montserrat', sans-serif;
+  color: #E40A8D;
+  font-size: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+h1 {
+	margin: 0;
+	font-family: 'Montserrat', sans-serif;
+	font-weight: 900;
+}
+
+.registration {
+  margin-left: 15px;
+}
+
+.container {
+  width: 1170px;
+  margin: 0 auto;
+}
+
+.header {
+  padding-top: 20px;
+}
+
+.wrapper {
+  display: flex;
+  justify-content: space-between;
+}
+
+.head {
+  display: flex;
+}
+
+.logo {
+  height: 150px;
+}
+
+.menu {
+  margin-top: 50px;
+  margin-left: 235px;
+  display: flex;
+}
+
+.offer {
+  margin-top: 165px;
+}
+
+.title{
+  font-size: 36px;
+  margin-bottom: 15px;
+}
+
+.btn {
+  font-family: 'Montserrat', sans-serif;
+  background: #CA45DF;
+  color: #000;
+  border-radius: 100px;
+  display: block;
+  width: 150px;
+}
+
+.knob {
+  font-family: 'Montserrat', sans-serif;
+  color: #EC54AF;
+  text-decoration: none;
+  margin-right: 50px;
+  font-size: 18px;
+}
+
+.login {
+  margin-top: 220px;
+}

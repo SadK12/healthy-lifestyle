@@ -132,6 +132,10 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 
+STATICFILES_DIRS = [
+    BASE_DIR / 'static'
+]
+
 STATIC_ROOT = DB_CONFIG.get('projects', {}).get('healthcare', {}).get('static_dir', 'healthcare_static')
 
 MEDIA_URL = 'media/'
