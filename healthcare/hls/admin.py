@@ -4,7 +4,7 @@ from .models import User, Food, Activity
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'age', 'goal', 'activity')
+    list_display = ('id', 'name', 'age', 'height', 'weight', 'goal', 'activity')
     list_display_links = ('id', 'name')
 
 

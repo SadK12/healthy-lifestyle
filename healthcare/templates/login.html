@@ -10,32 +10,37 @@
             Авторизация
           </div>
           <div class="card-body">
-            <div class="row g-3 align-items-center my-2 justify-content-between">
-              <div class="col-auto">
-                <label for="inputEmail" class="col-form-label">Почта</label>
+              <form method="post">
+              {% csrf_token %}
+              {{ form.non_field_errors }}
+              {% for field in form %}
+                <div class="row g-3 align-items-center my-2 justify-content-between">
+                  <div class="col-auto">
+                    {{ field.label_tag }}
+                  </div>
+                  <div class="col-9">
+                    {{ field }}
+                    {% if field.errors %}
+                     <div class="invalid-feedback">
+                      {% for err in field.errors %}
+                        <div>{{ err }}</div>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+              <div class="text-center mt-3">
+                <button type="submit" class="btn btn-dark text-dark px-3 py-2" style="background-color: #CA45DF;">
+                    Войти
+                </button>
               </div>
-              <div class="col-9">
-                <input type="text" id="inputEmail" class="form-control">
-              </div>
-            </div>
-            <div class="row g-3 align-items-center my-2 justify-content-between">
-              <div class="col-auto">
-                <label for="inputPassword" class="col-form-label">Пароль</label>
-              </div>
-              <div class="col-9">
-                <input type="password" id="inputPassword" class="form-control">
-              </div>
-            </div>
-            <div class="text-center mt-3">
-                <button type="button" class="btn btn-dark text-dark px-3 py-2" style="background-color: #CA45DF;">
-                    <a href="{% url 'care' %}" class="text-decoration-none text-reset">Войти</a>
-                </button> 
-            </div>
+              </form>
           </div>
           <div class="card-footer text-center">
             <div class="justify-content-between d-flex">
-                <div class="col-5"><button type="button" class="btn btn-link">Забыли пароль?</button></div>
-                <div class="col-7"><button type="button" class="btn btn-link"><a href="{% url 'register' %}">Еще не зарегестрированы?</a></button></div>
+                <div class="col-5"><button type="button" class="btn btn-link text-light">Забыли пароль?</button></div>
+                <div class="col-7"><button type="button" class="btn btn-link"><a href="{% url 'register' %}" class="text-light">Еще не зарегестрированы?</a></button></div>
             </div>
           </div>
         </div>
