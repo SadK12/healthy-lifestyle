@@ -10,6 +10,11 @@ class RegisterUserForm(UserCreationForm):
         "type": "text",
         "id": "inputName"
     }))
+    username = forms.CharField(max_length=20, required=True, label="Никнейм", widget=forms.TextInput(attrs={
+        "class": "form-control",
+        "type": "text",
+        "id": "inputNickname"
+    }))
     email = forms.EmailField(max_length=60, required=True, label="Почта", widget=forms.EmailInput(attrs={
         "class": "form-control",
         "type": "email",
@@ -77,6 +82,7 @@ class RegisterUserForm(UserCreationForm):
         model = User
         fields = (
             'name',
+            'username',
             'email',
             'age',
             'gender',

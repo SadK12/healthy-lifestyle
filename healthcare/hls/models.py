@@ -3,11 +3,13 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, name, email, age, gender, height, weight, goal, activity, password=None):
+    def create_user(self, name, username, email, age, gender, height, weight, goal, activity, password=None):
         if not name:
             raise ValueError("Отсутствует имя пользователя")
         if not email:
             raise ValueError("Отсутствует почта пользователя")
+        if not username:
+            raise ValueError("Отсутствует никнейм пользователя")
         if not age:
             raise ValueError("Отсутствует возраст пользователя")
         if not gender:
@@ -23,6 +25,7 @@ class UserManager(BaseUserManager):
 
         user = self.model(
             name=name,
+            username=username,
             email=self.normalize_email(email),
             age=age,
             gender=gender,
@@ -39,6 +42,7 @@ class UserManager(BaseUserManager):
     def create_superuser(self, name, email, age, gender, height, weight, goal, activity, password):
         user = self.create_user(
             name=name,
+            username=username,
             email=self.normalize_email(email),
             age=age,
             gender=gender,
@@ -79,7 +83,7 @@ class User(AbstractBaseUser):
     BMI = models.PositiveSmallIntegerField(blank=True, null=True)
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['name', 'age', 'gender', 'height', 'weight', 'goal', 'activity']
+    REQUIRED_FIELDS = ['name', 'username', 'age', 'gender', 'height', 'weight', 'goal', 'activity']
 
     objects = UserManager()
 
