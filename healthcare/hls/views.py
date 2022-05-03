@@ -61,7 +61,7 @@ def care(request):
         eaten_food[k] = {
             'category': every_meal['category'],
             'food_name': temp.name,
-            'caloricity': temp.caloricity * (every_meal['amount'] / 100),
+            'caloricity': round(temp.caloricity * (every_meal['amount'] / 100), 1),
             'proteins': round(temp.proteins * (every_meal['amount'] / 100), 2),
             'fats': round(temp.fats * (every_meal['amount'] / 100), 2),
             'carbohydrates': round(temp.carbohydrates * (every_meal['amount'] / 100), 2)
