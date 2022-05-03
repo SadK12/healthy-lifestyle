@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load hls_extras %}
 
 {% block title %} Healthcare | Главная {% endblock %}
 
@@ -17,8 +18,11 @@
             </li>
           </ul>
         </div>
-        <span class="navbar-text me-4">
-          <a href="{% url 'logout' %}" class="text-light" style="text-decoration: none;">Выйти</a>
+        <div class="navbar-text mx-4 text-light">
+            Привет, {{ user.name }}. Cегодня: {% now "d.m.y" %}
+        </div>
+        <span class="navbar-text mx-4">
+          <a href="{% url 'logout' %}" class="text-light" style="text-decoration: none;"><u>Выйти</u></a>
         </span>
 {% endblock %}
 
@@ -27,25 +31,22 @@
           <div class="card text-white bg-dark col-6 mx-3">
               <h5 class="card-header">Питание</h5>
               <div class="card-body">
-                <div class="justify-content-between d-flex my-2 align-items-center">
+                <div class="justify-content-between d-flex mt-2 mb-4 me-2 align-items-center">
                   <div class="col-8 mx-2">
-                      <p class="fs-5">Потребление калорий: 400 / 2000 Ккал</p>
+                      <p class="fs-5">Потребление калорий: {{ summed_food.caloricity }} / {{ user.consumption_norm }} Ккал</p>
                       <div class="progress" style="height: 30px;">
-                        <div class="progress-bar" role="progressbar" style="width: 25%; background-color: #CA45DF;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                        <div class="progress-bar" role="progressbar" style="width: {{ summed_food.caloricity|calc_food_procent:user.consumption_norm }}%; background-color: #CA45DF;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">{{ summed_food.caloricity|calc_food_procent:user.consumption_norm }}%</div>
                       </div>
                   </div>
                   <div class="col-4 mx-2">
-                    <button type="button" class="btn btn-dark text-dark px-3 py-2 mx-2 my-2" style="background-color: #CA45DF;">Завтрак</button>
-                    <button type="button" class="btn btn-dark text-dark px-3 py-2 mx-2 my-2" style="background-color: #CA45DF;">Обед</button><br>
-                    <button type="button" class="btn btn-dark text-dark px-3 py-2 mx-2 my-2" style="background-color: #CA45DF;">Ужин</button>
-                    <button type="button" class="btn btn-dark text-dark px-3 py-2 mx-2 my-2" style="background-color: #CA45DF;">Перекус</button><br>
+                    <button type="button" class="btn btn-dark text-dark px-3 py-3 mx-2 my-2" style="background-color: #CA45DF;" data-bs-toggle="modal" data-bs-target="#addMealModal">Добавить прием пищи</button>
                   </div>
                 </div>
                 <div class="d-flex justify-content-start my-2 align-items-center">
                   <div class="col-2 ms-2 me-5">Белки</div>
                   <div class="col-9 me-2">
                       <div class="progress">
-                          <div class="progress-bar" role="progressbar" style="width: 25%; background-color: #CA45DF;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                          <div class="progress-bar" role="progressbar" style="width: {{ summed_food.proteins|calc_protein_procent:user.consumption_norm }}%; background-color: #CA45DF;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                   </div>
                 </div>
@@ -53,7 +54,7 @@
                   <div class="col-2 ms-2 me-5">Жиры</div>
                   <div class="col-9 me-2">
                       <div class="progress">
-                          <div class="progress-bar" role="progressbar" style="width: 35%; background-color: #CA45DF;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
+                          <div class="progress-bar" role="progressbar" style="width: {{ summed_food.fats|calc_fat_procent:user.consumption_norm }}%; background-color: #CA45DF;" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                   </div>
                 </div>
@@ -61,7 +62,7 @@
                   <div class="col-2 ms-2 me-5">Углеводы</div>
                   <div class="col-9 me-2">
                       <div class="progress">
-                          <div class="progress-bar" role="progressbar" style="width: 75%; background-color: #CA45DF;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                          <div class="progress-bar" role="progressbar" style="width: {{ summed_food.carbohydrates|calc_hydrate_procent:user.consumption_norm }}%; background-color: #CA45DF;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
                         </div>
                   </div>
                 </div>
@@ -90,7 +91,7 @@
           <div class="card-body">
                 <div class="justify-content-between d-flex my-2 align-items-center">
                   <div class="col-8 mx-2">
-                      <div class="fs-5">Дневная активность: сожжено 355 Ккал</div>
+                      <div class="fs-5">Дневная активность: сожжено 0 Ккал</div>
                   </div>
                   <div class="col-3 mx-2">
                     <button type="button" class="btn btn-dark text-dark px-3 py-2 mx-2 my-2" style="background-color: #CA45DF;">Добавить!</button>
@@ -98,16 +99,84 @@
                 </div>
                 <hr>
                 <div class="justify-content-start d-flex my-2 align-items-center">
-                   <div class="col-4 mx-2">
-                      <div class="fs-5">Пройдено 0 шагов</div>
+                   <div class="col-5 mx-2">
+                      <div class="fs-5">Пройдено 0 / {{ user.activity_norm }} шагов</div>
                   </div> 
-                  <div class="col-7 mx-4">
-                      <div class="progress" style="height: 30px;">
-                        <div class="progress-bar" role="progressbar" style="width: 25%; background-color: #CA45DF;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">25%</div>
+                  <div class="col-6 mx-4">
+                      <div class="progress" style="height: 25px;">
+                        <div class="progress-bar" role="progressbar" style="width: 0%; background-color: #CA45DF;" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
                       </div>
                   </div>
                 </div>
+                <hr>
+                <div class="justify-content-start d-flex my-2 align-items-center">
+                   <div class="col-12 mx-2">
+                      <div class="fs-5">Актуальный ИМТ: {{ user.BMI }}
+                          {% if user.BMI <= 16 %}
+                                <br> Выраженный дефицит массы тела
+                          {% elif user.BMI <= 18.5 %}
+                                <br> Дефицит массы тела
+                          {% elif user.BMI <= 25 %}
+                                <br> Нормальная масса тела
+                          {% elif user.BMI <= 30 %}
+                                <br> Избыточная масса тела (предожирение)
+                          {% elif user.BMI <= 35 %}
+                                <br> Ожирение первой степени
+                          {% elif user.BMI <= 40 %}
+                                <br> Ожирение второй степени
+                          {% elif user.BMI > 40 %}
+                                <br> Ожирение третьей степени
+                          {% endif %}
+                      </div>
+                  </div>
+                </div>
+                <hr>
+                  <div class="justify-content-start d-flex my-2 align-items-center">
+                       <div class="col-12 mx-2">
+                          <div class="fs-5">Соматотип: {{ user.somatotype }}
+                              <div style="font-size: 70%;">
+                              {% if user.somatotype == 'эктоморф' %}
+                                <b>Плюсы:</b> способность быстро накачать пресс.
+                                <br><b>Минусы:</b> сложность набора массы.
+                                <br><b>Рекомендации:</b> редкие интенсивные тренировки с низким количеством повторений, внимание к углеводному окну сразу после тренировки
+                              {% elif user.somatotype == 'мезоморф' %}
+                                <b>Плюсы:</b> атлетические способности (требуется меньше времени на восстановление), хороший метаболизм (у мужчин: высокий уровень тестостерона).
+                                <br><b>Минусы:</b> склонность к повышению холестирина и возможные проблемы с сосудами.
+                                <br><b>Рекомендации:</b> базовые программы тренировок, переход со временем на сплит-систему тренировок
+                              {% elif user.somatotype == 'эндоморф' %}
+                                <b>Плюсы:</b> мощность костей, высокая выносливость.
+                                <br><b>Минусы:</b> склонность к полноте, замедленный метаболизм.
+                                <br><b>Рекомендации:</b> круговые тренировки, наблюдение за гликемическим индексом углеводов, перед тренировками (за 30-40 минут до тренировки) рекомендуется небольная порция быстрых углеводов для большей энергии при тренировке
+                              {% endif %}
+                              </div>
+                          </div>
+                      </div>
+                  </div>
           </div>
         </div>
     </div>
+    <div class="modal fade" id="addMealModal" tabindex="-1" aria-labelledby="mealModalLabel" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content text-light bg-dark">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="breakfastModalLabel">Прием пищи</h5>
+                            <button type="button" class="btn-close bg-light" data-bs-dismiss="modal" aria-label="Close"></button>
+                          </div>
+                          <form method="post">
+                          {% csrf_token %}
+                          <div class="modal-body">
+                                    {% for field in form %}
+                                    <div class="mb-3">
+                                        <div class="my-1">{{ field.label_tag }}</div>
+                                        <div>{{ field }}</div>
+                                    </div>
+                                    {% endfor %}
+                          </div>
+                          <div class="modal-footer">
+                            <button type="submit" class="btn btn-dark text-dark" data-bs-dismiss="modal" style="background-color: #CA45DF;">Добавить</button>
+                          </div>
+                          </form>
+                        </div>
+                      </div>
+                    </div>
 {% endblock %}

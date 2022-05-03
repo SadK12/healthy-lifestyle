@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
-from .models import User
+from .models import User, Meal
 
 
 class RegisterUserForm(UserCreationForm):
@@ -117,3 +117,29 @@ class LoginUserForm(forms.ModelForm):
         password = self.cleaned_data['password']
         if not authenticate(email=email, password=password):
             raise forms.ValidationError("Неверно введен логин или пароль")
+
+
+class AddMealForm(forms.ModelForm):
+    category = forms.ChoiceField(label="Категория", choices=[
+        ('breakfast', 'Завтрак'),
+        ('lunch', 'Обед'),
+        ('dinner', 'Ужин'),
+        ('snack', 'Перекус')
+    ], widget=forms.Select(attrs={
+        "class": "form-control",
+        "id": "inputMealCategory"
+    }))
+    amount = forms.IntegerField(label="Количество (в граммах)", widget=forms.NumberInput(attrs={
+        "class": "form-control",
+        "id": "inputMealAmount"
+    }))
+
+    class Meta:
+        model = Meal
+        fields = ('category', 'food_name', 'amount')
+        widgets = {
+            "food_name": forms.Select(attrs={"class": "form-control", "id": "inputMealName"})
+        }
+        labels = {
+            "food_name": "Блюдо"
+        }

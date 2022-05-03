@@ -77,10 +77,6 @@ class User(AbstractBaseUser):
     goal = models.CharField(max_length=20)
     activity = models.CharField(max_length=20)
     wrist = models.PositiveSmallIntegerField(blank=True, null=True)
-    somatotype = models.CharField(max_length=40, blank=True, null=True)
-    consumption_norm = models.PositiveSmallIntegerField(blank=True, null=True)
-    activity_norm = models.PositiveSmallIntegerField(blank=True, null=True)
-    BMI = models.PositiveSmallIntegerField(blank=True, null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['name', 'username', 'age', 'gender', 'height', 'weight', 'goal', 'activity']
@@ -100,13 +96,87 @@ class User(AbstractBaseUser):
         verbose_name = 'Пользователь'
         verbose_name_plural = 'Пользователи'
 
+    @property
+    def BMI(self):
+        return round((self.weight / ((self.height / 100) ** 2)), 2)
+
+    @property
+    def consumption_norm(self):
+        if self.gender == 'male':
+            male_norm = (10 * self.weight) + (6.25 * self.height) - (5 * self.age) + 5
+            if self.goal == 'lose':
+                if self.activity == 'seating':
+                    return round(0.85 * (male_norm * 1.2))
+                elif self.activity == 'moderate':
+                    return round(0.85 * (male_norm * 1.4))
+                elif self.activity == 'active':
+                    return round(0.85 * (male_norm * 1.725))
+            elif self.goal == 'keep':
+                if self.activity == 'seating':
+                    return round(male_norm * 1.2)
+                elif self.activity == 'moderate':
+                    return round(male_norm * 1.4)
+                elif self.activity == 'active':
+                    return round(male_norm * 1.725)
+            elif self.goal == 'gain':
+                if self.activity == 'seating':
+                    return round(1.15 * (male_norm * 1.2))
+                elif self.activity == 'moderate':
+                    return round(1.15 * (male_norm * 1.4))
+                elif self.activity == 'active':
+                    return round(1.15 * (male_norm * 1.725))
+        elif self.gender == 'female':
+            female_norm = (10 * self.weight) + (6.25 * self.height) - (5 * self.age) - 161
+            if self.goal == 'lose':
+                if self.activity == 'seating':
+                    return round(0.85 * (female_norm * 1.2))
+                elif self.activity == 'moderate':
+                    return round(0.85 * (female_norm * 1.4))
+                elif self.activity == 'active':
+                    return round(0.85 * (female_norm * 1.725))
+            elif self.goal == 'keep':
+                if self.activity == 'seating':
+                    return round(female_norm * 1.2)
+                elif self.activity == 'moderate':
+                    return round(female_norm * 1.4)
+                elif self.activity == 'active':
+                    return round(female_norm * 1.725)
+            elif self.goal == 'gain':
+                if self.activity == 'seating':
+                    return round(1.15 * (female_norm * 1.2))
+                elif self.activity == 'moderate':
+                    return round(1.15 * (female_norm * 1.4))
+                elif self.activity == 'active':
+                    return round(1.15 * (female_norm * 1.725))
+
+    @property
+    def activity_norm(self):
+        if self.activity == 'seating':
+            return 5000
+        elif self.activity == 'moderate':
+            return 7500
+        elif self.activity == 'active':
+            return 10000
+
+    @property
+    def somatotype(self):
+        if self.wrist:
+            if self.wrist < 17:
+                return 'эктоморф'
+            elif (self.wrist >= 17) & (self.wrist < 20):
+                return 'мезоморф'
+            elif self.wrist >= 20:
+                return 'эндоморф'
+        else:
+            return 'не определен'
+
 
 class Food(models.Model):
     name = models.CharField(max_length=80)
-    caloricity = models.PositiveSmallIntegerField()
-    proteins = models.PositiveSmallIntegerField()
-    fats = models.PositiveSmallIntegerField()
-    carbohydrates = models.PositiveSmallIntegerField()
+    caloricity = models.FloatField()
+    proteins = models.FloatField()
+    fats = models.FloatField()
+    carbohydrates = models.FloatField()
 
     def __str__(self):
         return self.name
@@ -118,7 +188,7 @@ class Food(models.Model):
 
 class Activity(models.Model):
     activity_type = models.CharField(max_length=80)
-    caloricity = models.PositiveSmallIntegerField()
+    caloricity = models.FloatField()
 
     def __str__(self):
         return self.activity_type

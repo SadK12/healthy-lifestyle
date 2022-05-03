@@ -1,7 +1,10 @@
+import datetime
+
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from .forms import RegisterUserForm, LoginUserForm
+from .forms import RegisterUserForm, LoginUserForm, AddMealForm
 from django.contrib.auth.decorators import login_required
+from .models import Food, Meal
 
 
 def register(request):
@@ -46,4 +49,42 @@ def logout_user(request):
 
 @login_required(login_url='login')
 def care(request):
-    return render(request, 'care.html')
+    user = request.user
+    food = Food.objects.all()
+    today_date = datetime.date.today()
+    tomorrow = today_date + datetime.timedelta(days=1)
+    today_meals = Meal.objects.filter(user=request.user).filter(added_at__range=(today_date, tomorrow)).values('category', 'food_name', 'amount')
+    k = 0
+    eaten_food = [0] * today_meals.count()
+    for every_meal in today_meals.iterator():
+        temp = food.filter(id=every_meal['food_name']).first()
+        eaten_food[k] = {
+            'category': every_meal['category'],
+            'food_name': temp.name,
+            'caloricity': temp.caloricity * (every_meal['amount'] / 100),
+            'proteins': round(temp.proteins * (every_meal['amount'] / 100), 2),
+            'fats': round(temp.fats * (every_meal['amount'] / 100), 2),
+            'carbohydrates': round(temp.carbohydrates * (every_meal['amount'] / 100), 2)
+        }
+        k += 1
+    summed_food = {
+        'caloricity': 0,
+        'proteins': 0,
+        'fats': 0,
+        'carbohydrates': 0
+    }
+    for item in eaten_food:
+        summed_food['caloricity'] += item['caloricity']
+        summed_food['proteins'] += item['proteins']
+        summed_food['fats'] += item['fats']
+        summed_food['carbohydrates'] += item['carbohydrates']
+    print(summed_food)
+    if request.method == 'POST':
+        form = AddMealForm(request.POST)
+        if form.is_valid:
+            meal = form.save(commit=False)
+            meal.user = request.user
+            meal.save()
+    else:
+        form = AddMealForm()
+    return render(request, 'care.html', {"user": user, "food": food, "form": form, "summed_food": summed_food})
