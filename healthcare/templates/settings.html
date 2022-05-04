@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+{% load static %}
+{% load hls_extras %}
+
+{% block title %} Healthcare | Настройки {% endblock %}
+
+{% block navbar %}
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'care' %}">Главная</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'stats' %}">Статистика</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'settings' %}">Настройки</a>
+            </li>
+          </ul>
+        </div>
+        <div class="navbar-text mx-4 text-light">
+            Привет, {{ user.name }}. Cегодня: {% now "d.m.y" %}
+        </div>
+        <span class="navbar-text mx-4">
+          <a href="{% url 'logout' %}" class="text-light" style="text-decoration: none;"><u>Выйти</u></a>
+        </span>
+{% endblock %}
+
+{% block content %}
+        <div class="container-fluid d-flex justify-content-center mt-4">
+        <div class="card col-4 text-white bg-dark mb-3">
+          <div class="card-header fw-bold fs-4">
+            Настройки профиля
+          </div>
+           <form method="post">
+          {% csrf_token %}
+          {{ form.non_field_errors }}
+          <div class="card-body">
+              {% for field in form %}
+                <div class="row g-3 align-items-center mb-2 justify-content-between">
+                  <div class="col-auto">
+                    {{ field.label_tag }}
+                  </div>
+                  <div class="col-8">
+                    {{ field }}
+                    {% if field.help_text %}
+                      <p class="mt-1" style="font-size: 70%;">{{ field.help_text }}</p>
+                    {% endif %}
+                    {% if field.errors %}
+                     <div class="invalid-feedback">
+                      {% for err in field.errors %}
+                        <div>{{ err }}</div>
+                      {% endfor %}
+                    </div>
+                    {% endif %}
+                  </div>
+                </div>
+              {% endfor %}
+          </div>
+          <div class="card-footer d-flex justify-content-between align-items-center">
+                <button type="submit" class="btn btn-dark text-dark my-2 px-3 py-2" style="background-color: #CA45DF;">Обновить профиль</button>
+                <a href="{% url 'care' %}" class="text-light">Вернуться</a>
+          </div>
+          </form>
+        </div>
+    </div>
+{% endblock %}

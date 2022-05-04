@@ -11,16 +11,13 @@
               <a class="nav-link" href="{% url 'care' %}">Главная</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Статистика</a>
+              <a class="nav-link" href="{% url 'stats' %}">Статистика</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Настройки</a>
+              <a class="nav-link" href="{% url 'settings' %}">Настройки</a>
             </li>
           </ul>
         </div>
-        {% if summed_starv.is_active %}
-            {{ summer_starv.finished_at }}
-        {% endif %}
         <div class="navbar-text mx-4 text-light">
             Привет, {{ user.name }}. Cегодня: {% now "d.m.y" %}
         </div>
@@ -91,6 +88,7 @@
                     <div class="col-6 mx-2">
                         <form method="post" class="d-flex">
                             {% csrf_token %}
+                            {{ starvation_form.non_field_errors }}
                             <div class="col-6 ms-5">
                                 {{ starvation_form.duration }}
                             </div>
@@ -148,25 +146,36 @@
                 <hr>
                   <div class="d-flex my-2 align-items-center">
                        <div class="col-12 mx-2">
-                          <div class="fs-5">Соматотип: {{ user.somatotype }}
                               {% if user.somatotype == 'эктоморф' %}
+                              <div class="fs-5">Соматотип: {{ user.somatotype }}
                                 <div style="font-size: 70%;">
                                 <b>Плюсы:</b> способность быстро накачать пресс.
                                 <br><b>Минусы:</b> сложность набора массы.
                                 <br><b>Рекомендации:</b> редкие интенсивные тренировки с низким количеством повторений, внимание к углеводному окну сразу после тренировки
                                 </div>
+                              </div>
                               {% elif user.somatotype == 'мезоморф' %}
+                              <div class="fs-5">Соматотип: {{ user.somatotype }}
                                 <div style="font-size: 70%;">
                                 <b>Плюсы:</b> атлетические способности (требуется меньше времени на восстановление), хороший метаболизм (у мужчин: высокий уровень тестостерона).
                                 <br><b>Минусы:</b> склонность к повышению холестирина и возможные проблемы с сосудами.
                                 <br><b>Рекомендации:</b> базовые программы тренировок, переход со временем на сплит-систему тренировок
                                 </div>
+                              </div>
                               {% elif user.somatotype == 'эндоморф' %}
+                              <div class="fs-5">Соматотип: {{ user.somatotype }}
                                 <div style="font-size: 70%;">
                                 <b>Плюсы:</b> мощность костей, высокая выносливость.
                                 <br><b>Минусы:</b> склонность к полноте, замедленный метаболизм.
                                 <br><b>Рекомендации:</b> круговые тренировки, наблюдение за гликемическим индексом углеводов, перед тренировками (за 30-40 минут до тренировки) рекомендуется небольная порция быстрых углеводов для большей энергии при тренировке
                                 </div>
+                              </div>
+                              {% elif user.somatotype == 'не определен' %}
+                              <div class="fs-5">Соматотип: <a href="{% url 'settings' %}" class="text-light">определить</a>
+                                <div style="font-size: 70%;">
+                                    (добавьте в профиль информацию об обхвате запястья)
+                                </div>
+                              </div>
                               {% endif %}
                           </div>
                       </div>
@@ -183,11 +192,19 @@
                           </div>
                           <form method="post">
                           {% csrf_token %}
+                          {{ meal_form.non_field_errors }}
                           <div class="modal-body">
                                     {% for field in meal_form %}
                                     <div class="mb-3">
                                         <div class="my-1">{{ field.label_tag }}</div>
                                         <div>{{ field }}</div>
+                                        {% if field.errors %}
+                                         <div class="invalid-feedback">
+                                          {% for err in field.errors %}
+                                            <div>{{ err }}</div>
+                                          {% endfor %}
+                                        </div>
+                                        {% endif %}
                                     </div>
                                     {% endfor %}
                           </div>
@@ -207,11 +224,19 @@
                           </div>
                           <form method="post">
                           {% csrf_token %}
+                          {{ sport_form.non_field_errors }}
                           <div class="modal-body">
                                     {% for field in sport_form %}
                                     <div class="mb-3">
                                         <div class="my-1">{{ field.label_tag }}</div>
                                         <div>{{ field }}</div>
+                                        {% if field.errors %}
+                                         <div class="invalid-feedback">
+                                          {% for err in field.errors %}
+                                            <div>{{ err }}</div>
+                                          {% endfor %}
+                                        </div>
+                                        {% endif %}
                                     </div>
                                     {% endfor %}
                           </div>

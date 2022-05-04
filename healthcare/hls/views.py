@@ -1,7 +1,7 @@
 import datetime
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
-from .forms import RegisterUserForm, LoginUserForm, AddMealForm, AddSportForm, AddStarvationForm
+from .forms import RegisterUserForm, LoginUserForm, AddMealForm, AddSportForm, AddStarvationForm, EditUserForm
 from django.contrib.auth.decorators import login_required
 from .models import Food, Meal, Activity, Sport, Starvation
 from django.utils import timezone
@@ -160,3 +160,20 @@ def care(request):
         "summed_starv": summed_starv
     }
     return render(request, 'care.html', context)
+
+
+@login_required
+def user_settings(request):
+    if request.method == 'POST':
+        form = EditUserForm(request.POST, instance=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('settings')
+    else:
+        form = EditUserForm(instance=request.user)
+    return render(request, 'settings.html', {"form": form})
+
+
+@login_required
+def statistics(request):
+    return render(request, 'stats.html')
