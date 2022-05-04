@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate
-from .models import User, Meal
+from .models import User, Meal, Sport, Starvation
 
 
 class RegisterUserForm(UserCreationForm):
@@ -143,3 +143,37 @@ class AddMealForm(forms.ModelForm):
         labels = {
             "food_name": "Блюдо"
         }
+
+
+class AddSportForm(forms.ModelForm):
+    duration = forms.IntegerField(label="Длительность (в мин.)", widget=forms.NumberInput(attrs={
+        "class": "form-control",
+        "id": "inputSportDuration"
+    }))
+
+    class Meta:
+        model = Sport
+        fields = ('activity_type', 'duration')
+        widgets = {
+            "activity_type": forms.Select(attrs={"class": "form-control", "id": "inputSportType"})
+        }
+        labels = {
+            "activity_type": "Тип активности"
+        }
+
+
+class AddStarvationForm(forms.ModelForm):
+    duration = forms.ChoiceField(choices=[
+        ('4', '4 часа'),
+        ('5', '5 часов'),
+        ('6', '6 часов'),
+        ('7', '7 часов'),
+        ('8', '8 часов')
+    ], widget=forms.Select(attrs={
+        "class": "form-control",
+        "id": "inputStarvationDuration"
+    }))
+
+    class Meta:
+        model = Starvation
+        fields = ('duration',)

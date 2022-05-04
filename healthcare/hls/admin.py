@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import User, Food, Activity, Meal
+from .models import User, Food, Activity, Meal, Sport, Starvation
 
 
 class UserAdmin(admin.ModelAdmin):
@@ -23,7 +23,19 @@ class MealAdmin(admin.ModelAdmin):
     list_display_links = ('category', 'food_name')
 
 
+class SportAdmin(admin.ModelAdmin):
+    list_display = ('user', 'activity_type', 'duration', 'added_at')
+    list_display_links = ('user', 'activity_type', 'duration', 'added_at')
+
+
+class StarvationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'started_at', 'duration')
+    list_display_links = ('user', 'started_at', 'duration')
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Food, FoodAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(Meal, MealAdmin)
+admin.site.register(Sport, SportAdmin)
+admin.site.register(Starvation, StarvationAdmin)

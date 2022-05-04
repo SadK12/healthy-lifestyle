@@ -5,7 +5,7 @@ register = template.Library()
 
 
 @register.filter
-def calc_food_procent(eaten, norm):
+def calc_procent(eaten, norm):
     return round(eaten / norm * 100)
 
 

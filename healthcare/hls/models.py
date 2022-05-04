@@ -216,5 +216,5 @@ class Sport(models.Model):
 class Starvation(models.Model):
     user = models.ForeignKey('User', on_delete=models.CASCADE)
     started_at = models.DateTimeField(auto_now=True)
-    stopped_at = models.DateTimeField()
+    stopped_at = models.DateTimeField(blank=True, null=True)
     duration = models.PositiveSmallIntegerField()
