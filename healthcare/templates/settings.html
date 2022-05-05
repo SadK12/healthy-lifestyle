@@ -19,7 +19,7 @@
           </ul>
         </div>
         <div class="navbar-text mx-4 text-light">
-            Привет, {{ user.name }}. Cегодня: {% now "d.m.y" %}
+            Профиль: {{ user.name }}. Cегодня: {% now "d.m.y" %}
         </div>
         <span class="navbar-text mx-4">
           <a href="{% url 'logout' %}" class="text-light" style="text-decoration: none;"><u>Выйти</u></a>

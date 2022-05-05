@@ -176,4 +176,137 @@ def user_settings(request):
 
 @login_required
 def statistics(request):
-    return render(request, 'stats.html')
+    context = {}
+    user = request.user
+    food = Food.objects.all()
+    activity = Activity.objects.all()
+    date_1 = datetime.date.today()
+    date_2 = date_1 + datetime.timedelta(days=1)
+    meals = [{}] * 7
+    sports = [{}] * 7
+    for k in range(7):
+        meals[k] = Meal.objects.filter(user=user).filter(added_at__range=(date_1, date_2)).values('category', 'food_name', 'amount')
+        sports[k] = Sport.objects.filter(user=user).filter(added_at__range=(date_1, date_2)).values('activity_type', 'duration')
+        date_2 = date_1
+        date_1 = date_2 - datetime.timedelta(days=1)
+    date_1 = date_2
+    meals.reverse()
+    sports.reverse()
+    j = 0
+    eaten_food = [[]] * len(meals)
+    for day_meal in meals:
+        k = 0
+        eaten_food[j] = [0] * day_meal.count()
+        for every_meal in day_meal.iterator():
+            temp = food.filter(id=every_meal['food_name']).first()
+            eaten_food[j][k] = {
+                'category': every_meal['category'],
+                'food_name': temp.name,
+                'caloricity': round(temp.caloricity * (every_meal['amount'] / 100)),
+                'proteins': round(temp.proteins * (every_meal['amount'] / 100), 2),
+                'fats': round(temp.fats * (every_meal['amount'] / 100), 2),
+                'carbohydrates': round(temp.carbohydrates * (every_meal['amount'] / 100), 2)
+            }
+            k += 1
+        j += 1
+    j = 0
+    worked_sports = [[]] * len(sports)
+    for day_sport in sports:
+        k = 0
+        worked_sports[j] = [0] * day_sport.count()
+        for every_sport in day_sport.iterator():
+            temp_sport = activity.filter(id=every_sport['activity_type']).first()
+            worked_sports[j][k] = {
+                'activity_type': temp_sport.activity_type,
+                'duration': every_sport['duration'],
+                'caloricity': round(temp_sport.caloricity)
+            }
+            k += 1
+        j += 1
+    summed_food = [{}] * 7
+    for k in range(7):
+        summed_food[k] = {
+            'breakfast': 0,
+            'lunch': 0,
+            'snack': 0,
+            'dinner': 0,
+            'proteins': 0,
+            'fats': 0,
+            'carbohydrates': 0
+        }
+    summed_sport = [{}] * 7
+    for k in range(7):
+        summed_sport[k] = {
+            'caloricity': 0,
+            'steps': 0
+        }
+    for k in range(7):
+        temp_br = 0
+        temp_lun = 0
+        temp_snack = 0
+        temp_din = 0
+        temp_prts = 0
+        temp_fats = 0
+        temp_hdrs = 0
+        for every_meal in eaten_food[k]:
+            if every_meal['category'] == 'breakfast':
+                temp_br += every_meal['caloricity']
+            elif every_meal['category'] == 'lunch':
+                temp_lun += every_meal['caloricity']
+            elif every_meal['category'] == 'snack':
+                temp_snack += every_meal['caloricity']
+            elif every_meal['category'] == 'dinner':
+                temp_din += every_meal['caloricity']
+            temp_prts += every_meal['proteins']
+            temp_fats += every_meal['fats']
+            temp_hdrs += every_meal['carbohydrates']
+        summed_food[k]['breakfast'] = temp_br
+        summed_food[k]['lunch'] = temp_lun
+        summed_food[k]['snack'] = temp_snack
+        summed_food[k]['dinner'] = temp_din
+        summed_food[k]['proteins'] = temp_prts
+        summed_food[k]['fats'] = temp_fats
+        summed_food[k]['carbohydrates'] = temp_hdrs
+    for k in range(7):
+        temp_calor = 0
+        temp_steps = 0
+        for every_sport in worked_sports[k]:
+            temp_calor += every_sport['duration'] * every_sport['caloricity']
+            if every_sport['activity_type'] == 'ходьба':
+                temp_steps += every_sport['duration'] * 80
+        summed_sport[k]['caloricity'] = temp_calor
+        summed_sport[k]['steps'] = temp_steps
+    breakfasts = [""] * 7
+    lunches = [""] * 7
+    snacks = [""] * 7
+    dinners = [""] * 7
+    proteins = [""] * 7
+    fats = [""] * 7
+    carbohydrates = [""] * 7
+    sport_calories = [""] * 7
+    steps = [""] * 7
+    for k in range(7):
+        breakfasts[k] = summed_food[k]['breakfast']
+        lunches[k] = summed_food[k]['lunch']
+        snacks[k] = summed_food[k]['snack']
+        dinners[k] = summed_food[k]['dinner']
+        proteins[k] = summed_food[k]['proteins']
+        fats[k] = summed_food[k]['fats']
+        carbohydrates[k] = summed_food[k]['carbohydrates']
+        sport_calories[k] = summed_sport[k]['caloricity']
+        steps[k] = summed_sport[k]['steps']
+    dates = [""] * 7
+    for k in range(7):
+        dates[k] = date_1.strftime("%d.%m.%Y")
+        date_1 = date_1 + datetime.timedelta(days=1)
+    context['dates'] = dates
+    context['breakfasts'] = breakfasts
+    context['lunches'] = lunches
+    context['snacks'] = snacks
+    context['dinners'] = dinners
+    context['proteins'] = proteins
+    context['fats'] = fats
+    context['carbohydrates'] = carbohydrates
+    context['sport_calories'] = sport_calories
+    context['steps'] = steps
+    return render(request, 'stats.html', context)
