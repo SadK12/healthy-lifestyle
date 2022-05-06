@@ -99,7 +99,7 @@ def care(request):
     }
     for item in worked_sports:
         summed_sport['caloricity'] += item['duration'] * item['caloricity']
-        if item['activity_type'] == 'ходьба':
+        if item['activity_type'] == 'Ходьба':
             summed_sport['steps'] += item['duration'] * 80
     summed_starv = {
         'is_active': False
@@ -272,7 +272,7 @@ def statistics(request):
         temp_steps = 0
         for every_sport in worked_sports[k]:
             temp_calor += every_sport['duration'] * every_sport['caloricity']
-            if every_sport['activity_type'] == 'ходьба':
+            if every_sport['activity_type'] == 'Ходьба':
                 temp_steps += every_sport['duration'] * 80
         summed_sport[k]['caloricity'] = temp_calor
         summed_sport[k]['steps'] = temp_steps
